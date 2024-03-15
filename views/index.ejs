@@ -56,7 +56,18 @@
             transition: background-color 0.3s ease; /* Transición de color */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
         }
-
+        button[type="button"] {
+            width: 100%;
+            background-color: #ff00ff;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease; /* Transición de color */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+        }
         button[type="submit"]:hover {
             background-color: #e2cf6e;
         }
@@ -100,7 +111,7 @@
         </select>
 
         <button type="submit">Calcular Recibo</button>
-        <button type="submit" href="/recibo">Limpiar</button>
+        <button type="button" href="/recibo">Limpiar</button>
 
 
     </form>
