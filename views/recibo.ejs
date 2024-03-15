@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recibo de Pago </title>
+  <style>
+  
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+    }
+
+    
+    .formulario {
+      display: flex;
+      flex-direction: column;
+      background-color: #333;
+      color: #fff;
+      border: solid 1px black;
+      padding: 20px;
+      border-radius: 5px;
+      width: min(700px, 90%);
+      margin: 20px auto;
+    }
+
+    .input-container {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+
+    button[type="submit"] {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #444;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #666;
+    }
+
+    
+    .recibo {
+      background-color: #333;
+      color: #fff;
+      border: solid 1px black;
+      padding: 20px;
+      border-radius: 5px;
+      width: min(700px, 90%);
+      margin: 20px auto;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    p {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <form class="formulario" action="/generar_recibo" method="post">
+      <div class="input-container">
+        <label for="numDocente">Número de Docente</label>
+        <input type="text" name="numDocente" id="numDocente" required />
+      </div>
+      <div class="input-container">
+        <label for="nombre">Nombre</label>
+        <input type="text" name="nombre" id="nombre" required />
+      </div>
+      <div class="input-container">
+        <label for="domicilio">Domicilio</label>
+        <input type="text" name="domicilio" id="domicilio" required />
+      </div>
+      <div class="input-container">
+        <label for="nivel">Nivel</label>
+        <select name="nivel" id="nivel" required>
+          <option value="1">Licenciatura o Ingeniería</option>
+          <option value="2">Maestro en Ciencias</option>
+          <option value="3">Doctor</option>
+        </select>
+      </div>
+      <div class="input-container">
+        <label for="pagoBase">Pago Base por Hora Impartida</label>
+        <input type="number" name="pagoBase" id="pagoBase" required />
+      </div>
+      <div class="input-container">
+        <label for="horasImpartidas">Horas Impartidas</label>
+        <input type="number" name="horasImpartidas" id="horasImpartidas" required />
+      </div>
+      <div class="input-container">
+        <label for="cantidadHijos">Cantidad de Hijos</label>
+        <input type="number" name="cantidadHijos" id="cantidadHijos" required />
+      </div>
+      <button type="submit">Generar Recibo</button>
+    </form>
+  </section>
+
+  <% if(recibo) { %>
+    <div class="recibo">
+      <h2>Recibo de Pago</h2>
+      <p>Número de Docente: <%= recibo.numDocente %></p>
+      <p>Nombre: <%= recibo.nombre %></p>
+      <p>Domicilio: <%= recibo.domicilio %></p>
+      <p>Nivel: <%= recibo.nivel %></p>
+      <p>Pago Base por Hora Impartida: $<%= recibo.pagoBase %></p>
+      <p>Horas Impartidas: <%= recibo.horasImpartidas %></p>
+      <p>Cantidad de Hijos: <%= recibo.cantidadHijos %></p>
+      <p>Pago Total: $<%= recibo.pagoTotal %></p>
+      <p>Impuesto: $<%= recibo.impuesto %></p>
+      <p>Bono por Paternidad: $<%= recibo.bonoPaternidad %></p>
+    </div>
+  <% } %>
+</body>
+</html>
