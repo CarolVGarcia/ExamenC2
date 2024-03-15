@@ -1,61 +1,79 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+import express from "express";
 
-const app = express();
-const port = 80;
+const router = express.Router();
 
-// Configurar middleware para procesar datos del formulario
-app.use(bodyParser.urlencoded({ extended: false }));
+function calcularPago(nivel, pagoHoraBase, horas) {
+  const incrementos = [0.3, 0.5, 1.0];
+  const incremento = incrementos[nivel - 1];
+  return pagoHoraBase * (1 + incremento) * horas;
+}
 
-// Ruta para manejar la solicitud de generación de recibo de pago
-app.post('/generar_recibo', (req, res) => {
-  const { numDocente, nombre, domicilio, nivel, pagoBase, horasImpartidas, cantidadHijos } = req.body;
+function calcularImpuesto(pagoPorHoras) {
+  return pagoPorHoras * 0.16;
+}
 
+function calcularBono(numHijos, pagoPorHoras) {
+  let porcentajeBono = 0;
+  numHijos = parseInt(numHijos);
+
+  if (numHijos >= 1 && numHijos <= 2) {
+    porcentajeBono = 0.05;
+  } else if (numHijos >= 3 && numHijos <= 5) {
+    porcentajeBono = 0.10;
+  } else if (numHijos > 5) {
+    porcentajeBono = 0.20;
+  }
   
-  let pagoBasePorHora = parseFloat(pagoBase);
-  if (nivel === '1') {
-    pagoBasePorHora *= 1.3; // Incremento del 30% para nivel 1
-  } else if (nivel === '2') {
-    pagoBasePorHora *= 1.5; // Incremento del 50% para nivel 2
-  } else if (nivel === '3') {
-    pagoBasePorHora *= 2; // Incremento del 100% para nivel 3
-  }
+  return pagoPorHoras * porcentajeBono;
+}
 
-  // Calcular el pago total
-  const pagoTotal = pagoBasePorHora * parseFloat(horasImpartidas);
+function calcularTotalAPagar(pagoPorHoras, bono, impuesto) {
+  return pagoPorHoras + bono - impuesto;
+}
 
-  // Calcular el impuesto
-  const impuesto = pagoTotal * 0.16;
+router.get("/", (req, res) => {
+  res.render("index", { titulo: "Bienvenido al Colegio Patria" });
+});
 
-  // Calcular el bono por paternidad
-  let bonoPaternidad = 0;
-  if (cantidadHijos >= 1 && cantidadHijos <= 2) {
-    bonoPaternidad = pagoTotal * 0.05;
-  } else if (cantidadHijos >= 3 && cantidadHijos <= 5) {
-    bonoPaternidad = pagoTotal * 0.1;
-  } else if (cantidadHijos > 5) {
-    bonoPaternidad = pagoTotal * 0.2;
-  }
 
-  // Calcular el recibo de pago
-  const recibo = {
-    numDocente,
+router.get("/recibo", (req, res) => {
+  res.render("recibo", {
+    titulo: "Recibo",
+    isPost: false
+  });
+});
+
+// Configurar la ruta que procesa el formulario de recibo
+router.post("/recibo", (req, res) => {
+  const { numero, nombre, domicilio, nivel, pagoHoraBase, horas, numHijos } = req.body;
+
+  const nivelNumerico = parseInt(nivel);
+  const pagoHoraBaseNumerico = parseFloat(pagoHoraBase);
+  const horasNumericas = parseFloat(horas);
+  const numHijosNumerico = parseInt(numHijos);
+
+  const pagoPorHoras = calcularPago(parseInt(nivel), parseFloat(pagoHoraBase), parseFloat(horas));
+  const bono = calcularBono(parseInt(numHijos), pagoPorHoras);
+  const impuesto = calcularImpuesto(pagoPorHoras);
+  const totalAPagar = calcularTotalAPagar(pagoPorHoras, bono, impuesto);
+
+  const params = {
+    titulo: "Recibo del Colegio Patria",
+    numero,
     nombre,
     domicilio,
-    nivel,
-    pagoBase: parseFloat(pagoBase),
-    horasImpartidas: parseFloat(horasImpartidas),
-    cantidadHijos: parseInt(cantidadHijos),
-    pagoTotal: pagoTotal.toFixed(2),
-    impuesto: impuesto.toFixed(2),
-    bonoPaternidad: bonoPaternidad.toFixed(2)
+    nivel: nivelNumerico,
+    pagoHoraBase: pagoHoraBaseNumerico,
+    horas: horasNumericas,
+    numHijos: numHijosNumerico,
+    pagoPorHoras,
+    bono,
+    impuesto,
+    totalAPagar,
+    isPost: true
   };
-
-  // Renderizar la plantilla del recibo de pago con los datos calculados
-  res.render('recibo_pago', { recibo });
+  res.render("recibo", params);
 });
 
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor iniciado en http://localhost:${port}`);
-});
+
+export default router;
