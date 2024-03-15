@@ -1,6 +1,8 @@
 import express from "express";
 
-const router = express.Router();
+export const router = express.Router();
+
+export default { router };
 
 function calcularPago(nivel, pagoHoraBase, horas) {
   const incrementos = [0.3, 0.5, 1.0];
@@ -43,7 +45,7 @@ router.get("/recibo", (req, res) => {
   });
 });
 
-// Configurar la ruta que procesa el formulario de recibo
+
 router.post("/recibo", (req, res) => {
   const { numero, nombre, domicilio, nivel, pagoHoraBase, horas, numHijos } = req.body;
 
@@ -74,6 +76,3 @@ router.post("/recibo", (req, res) => {
   };
   res.render("recibo", params);
 });
-
-
-export default router;

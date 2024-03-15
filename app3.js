@@ -1,22 +1,22 @@
+
 import express from 'express';
+
 import { fileURLToPath } from 'url';
+import bodyParser from 'body-parser';
 import path from 'path';
 
-// Importa directamente el router aquí
-import router from './index.js';
+import myRoutes from './router/index.js'
 
-const puerto = 80; 
+const puerto = 80;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// Crear la aplicación Express
+const main = express();
+main.set('view engine', 'ejs');
+main.set(express.static( `${__dirname}/public` ) );
+main.use(bodyParser.urlencoded({extended:true}));
+main.use(myRoutes.router);
 
-const app = express();
-
-app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true }));
-
-app.use(router);
-
-app.listen(puerto, () => {
+main.listen(puerto, () => {
   console.log(`Servidor corriendo en http://localhost:${puerto}`);
 });
